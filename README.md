@@ -622,7 +622,7 @@ Distributed under the [Apache 2.0 License](LICENSE). See `LICENSE.txt` for more 
 
 [license-shield]: https://img.shields.io/github/license/caneryilmaz52/LuckyWheelViewCompose?style=for-the-badge
 
-[license-url]: https://github.com/caneryilmaz52/LuckyWheelViewCompose/blob/master/LICENSE
+[license-url]: https://github.com/caneryilmaz52/LuckyWheelViewCompose/blob/main/LICENSE
 
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 
