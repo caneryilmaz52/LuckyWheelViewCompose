@@ -1,0 +1,101 @@
+plugins {
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
+    id("maven-publish")
+}
+
+android {
+    namespace 'com.caneryilmaz.apps.luckywheel.compose'
+    compileSdk 34
+
+    defaultConfig {
+        minSdk 26
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+
+    buildFeatures {
+        compose true
+    }
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
+}
+
+dependencies {
+
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.appcompat
+    implementation libs.material
+    implementation libs.androidx.runtime.android
+    implementation libs.androidx.animation.core.android
+    implementation libs.androidx.foundation.android
+    testImplementation libs.junit
+    androidTestImplementation libs.androidx.junit
+    androidTestImplementation libs.androidx.espresso.core
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            create("release", MavenPublication) {
+                from components.release
+                groupId = "com.github.caneryilmaz52"
+                artifactId = "LuckyWheelViewCompose"
+                version = "1.0.0"
+
+                pom {
+                    name.set("Lucky Wheel View Compose")
+                    description.set("A custom lightweight component that displays a Lucky Wheel developed with Kotlin. Features easy customize of colors , text, icon, arrow, animation, rotation and addition of items and it's very easy to integrate in your application.")
+                    url.set("https://github.com/caneryilmaz52/LuckyWheelViewCompose")
+
+                    licenses {
+                        license {
+                            name.set("The Apache License, Version 2.0")
+                            url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                        }
+                    }
+                    developers {
+                        developer {
+                            id.set("caneryilmaz52")
+                            name.set("Caner YILMAZ")
+                            email.set("caneryilmaz.apps@gmail.com")
+                        }
+                    }
+                    scm {
+                        connection.set("scm:git:github.com/caneryilmaz52/LuckyWheelViewCompose.git")
+                        developerConnection.set("scm:git:ssh://github.com/caneryilmaz52/LuckyWheelViewCompose.git")
+                        url.set("https://github.com/caneryilmaz52/LuckyWheelViewCompose")
+                    }
+                }
+            }
+        }
+        repositories {
+            maven {
+                url = uri("$buildDir/outputs/repo")
+            }
+        }
+    }
+}
