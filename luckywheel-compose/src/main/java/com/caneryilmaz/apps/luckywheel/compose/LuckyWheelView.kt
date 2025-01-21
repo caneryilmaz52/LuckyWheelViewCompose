@@ -1,10 +1,10 @@
 package com.caneryilmaz.apps.luckywheel.compose
 
+import android.graphics.Bitmap
 import android.graphics.LinearGradient
 import android.graphics.Paint
 import android.graphics.Shader
 import android.graphics.Typeface
-import androidx.annotation.FloatRange
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -33,7 +33,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asAndroidPath
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.graphicsLayer
@@ -45,6 +47,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.core.content.res.ResourcesCompat
+import coil3.imageLoader
+import coil3.request.ImageRequest
+import coil3.toBitmap
 import com.caneryilmaz.apps.luckywheel.compose.constant.ArrowPosition
 import com.caneryilmaz.apps.luckywheel.compose.constant.RotationDirection
 import com.caneryilmaz.apps.luckywheel.compose.constant.RotationSpeed
@@ -55,6 +60,7 @@ import com.caneryilmaz.apps.luckywheel.compose.data.CenterImageStyle
 import com.caneryilmaz.apps.luckywheel.compose.data.CenterPointStyle
 import com.caneryilmaz.apps.luckywheel.compose.data.CenterTextStyle
 import com.caneryilmaz.apps.luckywheel.compose.data.CornerPointsStyle
+import com.caneryilmaz.apps.luckywheel.compose.data.ItemIconStyle
 import com.caneryilmaz.apps.luckywheel.compose.data.ItemSeparatorStyle
 import com.caneryilmaz.apps.luckywheel.compose.data.ItemTextStyle
 import com.caneryilmaz.apps.luckywheel.compose.data.RandomRotateStyle
@@ -82,10 +88,7 @@ import kotlin.random.Random
  *
  * @param randomRotateStyle check info for [RandomRotateStyle] description
  *
- * @param iconPositionFraction
- * * is icon vertical position fraction in wheel slice
- * - The smaller the value, the closer to the center
- * - The larger the value, the closer to the corners
+ * @param itemIconStyle check info for [ItemIconStyle] description
  *
  * @param arrowStyle check info for [ArrowStyle] description
  *
@@ -119,7 +122,7 @@ fun LuckyWheelView(
     wheelItems: List<WheelData>,
     target: Int = 0,
     randomRotateStyle: RandomRotateStyle = RandomRotateStyle(),
-    @FloatRange(from = 0.1, to = 0.9) iconPositionFraction: Float = 0.5F,
+    itemIconStyle: ItemIconStyle = ItemIconStyle(),
     arrowStyle: ArrowStyle = ArrowStyle(),
     centerPointStyle: CenterPointStyle = CenterPointStyle(),
     cornerPointsStyle: CornerPointsStyle = CornerPointsStyle(),
@@ -494,32 +497,111 @@ fun LuckyWheelView(
                                 }
                             }
 
-                            item.icon?.let { icon ->
-                                val imageWidth = icon.width.toFloat()
-                                val imageHeight = icon.height.toFloat()
-                                val angle = sweepAngle * wheelItems.indexOf(item) + sweepAngle / 2
-                                val radians = Math.toRadians(angle.toDouble())
+                            if (item.iconURL != null) {
+                                val request = ImageRequest.Builder(currentContext)
+                                    .data(item.iconURL)
+                                    .target(
+                                        onSuccess = { result ->
+                                            val adaptiveSize = (100 * itemIconStyle.iconSizeMultiplier).toInt()
+                                            val scaledIcon = Bitmap.createScaledBitmap(result.toBitmap(), adaptiveSize, adaptiveSize, true)
+                                            val imageBitmap = scaledIcon.asImageBitmap()
 
-                                val sliceCenterX = (center.x + (wheelRadius * iconPositionFraction) * cos(radians)).toFloat()
-                                val sliceCenterY = (center.y + (wheelRadius * iconPositionFraction) * sin(radians)).toFloat()
+                                            val imageWidth = imageBitmap.width.toFloat()
+                                            val imageHeight = imageBitmap.height.toFloat()
+                                            val angle = sweepAngle * wheelItems.indexOf(item) + sweepAngle / 2
+                                            val radians = Math.toRadians(angle.toDouble())
 
-                                if (item.iconColor != Color.Unspecified) {
-                                    drawImage(
-                                        image = icon,
-                                        topLeft = Offset(
-                                            x = sliceCenterX - imageWidth / 2,
-                                            y = sliceCenterY - imageHeight / 2
-                                        ),
-                                        colorFilter = ColorFilter.tint(color = item.iconColor)
+                                            val sliceCenterX = (center.x + (wheelRadius * itemIconStyle.iconPositionFraction) * cos(radians)).toFloat()
+                                            val sliceCenterY = (center.y + (wheelRadius * itemIconStyle.iconPositionFraction) * sin(radians)).toFloat()
+
+                                            if (item.iconColor != Color.Unspecified) {
+                                                drawImage(
+                                                    image = imageBitmap,
+                                                    topLeft = Offset(
+                                                        x = sliceCenterX - imageWidth / 2,
+                                                        y = sliceCenterY - imageHeight / 2
+                                                    ),
+                                                    colorFilter = ColorFilter.tint(color = item.iconColor)
+                                                )
+                                            } else {
+                                                drawImage(
+                                                    image = imageBitmap,
+                                                    topLeft = Offset(
+                                                        x = sliceCenterX - imageWidth / 2,
+                                                        y = sliceCenterY - imageHeight / 2
+                                                    )
+                                                )
+                                            }
+                                        },
+                                        onError = { error ->
+                                            item.icon?.let { icon ->
+                                                val adaptiveSize = (100 * itemIconStyle.iconSizeMultiplier).toInt()
+                                                val scaledIcon = Bitmap.createScaledBitmap(icon.asAndroidBitmap(), adaptiveSize, adaptiveSize, true)
+                                                val imageBitmap = scaledIcon.asImageBitmap()
+
+                                                val imageWidth = imageBitmap.width.toFloat()
+                                                val imageHeight = imageBitmap.height.toFloat()
+                                                val angle = sweepAngle * wheelItems.indexOf(item) + sweepAngle / 2
+                                                val radians = Math.toRadians(angle.toDouble())
+
+                                                val sliceCenterX = (center.x + (wheelRadius * itemIconStyle.iconPositionFraction) * cos(radians)).toFloat()
+                                                val sliceCenterY = (center.y + (wheelRadius * itemIconStyle.iconPositionFraction) * sin(radians)).toFloat()
+
+                                                if (item.iconColor != Color.Unspecified) {
+                                                    drawImage(
+                                                        image = imageBitmap,
+                                                        topLeft = Offset(
+                                                            x = sliceCenterX - imageWidth / 2,
+                                                            y = sliceCenterY - imageHeight / 2
+                                                        ),
+                                                        colorFilter = ColorFilter.tint(color = item.iconColor)
+                                                    )
+                                                } else {
+                                                    drawImage(
+                                                        image = imageBitmap,
+                                                        topLeft = Offset(
+                                                            x = sliceCenterX - imageWidth / 2,
+                                                            y = sliceCenterY - imageHeight / 2
+                                                        )
+                                                    )
+                                                }
+                                            }
+                                        }
                                     )
-                                } else {
-                                    drawImage(
-                                        image = icon,
-                                        topLeft = Offset(
-                                            x = sliceCenterX - imageWidth / 2,
-                                            y = sliceCenterY - imageHeight / 2
+                                    .build()
+                                currentContext.imageLoader.enqueue(request)
+                            } else {
+                                item.icon?.let { icon ->
+                                    val adaptiveSize = (100 * itemIconStyle.iconSizeMultiplier).toInt()
+                                    val scaledIcon = Bitmap.createScaledBitmap(icon.asAndroidBitmap(), adaptiveSize, adaptiveSize, true)
+                                    val imageBitmap = scaledIcon.asImageBitmap()
+
+                                    val imageWidth = imageBitmap.width.toFloat()
+                                    val imageHeight = imageBitmap.height.toFloat()
+                                    val angle = sweepAngle * wheelItems.indexOf(item) + sweepAngle / 2
+                                    val radians = Math.toRadians(angle.toDouble())
+
+                                    val sliceCenterX = (center.x + (wheelRadius * itemIconStyle.iconPositionFraction) * cos(radians)).toFloat()
+                                    val sliceCenterY = (center.y + (wheelRadius * itemIconStyle.iconPositionFraction) * sin(radians)).toFloat()
+
+                                    if (item.iconColor != Color.Unspecified) {
+                                        drawImage(
+                                            image = imageBitmap,
+                                            topLeft = Offset(
+                                                x = sliceCenterX - imageWidth / 2,
+                                                y = sliceCenterY - imageHeight / 2
+                                            ),
+                                            colorFilter = ColorFilter.tint(color = item.iconColor)
                                         )
-                                    )
+                                    } else {
+                                        drawImage(
+                                            image = imageBitmap,
+                                            topLeft = Offset(
+                                                x = sliceCenterX - imageWidth / 2,
+                                                y = sliceCenterY - imageHeight / 2
+                                            )
+                                        )
+                                    }
                                 }
                             }
 
