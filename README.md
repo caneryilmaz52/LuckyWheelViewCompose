@@ -19,7 +19,7 @@
   </br>
   <ol>
     <li><a href="#about-the-project">About The Project</a></li>
-    <li><a href="#xml">XML</a></li>
+    <li><a href="#android-views">Android Views</a></li>
     <li><a href="#installation">Installation</a></li>
     <li><a href="#usage">Usage</a></li>
     <li><a href="#examples">Examples</a></li>
@@ -50,7 +50,8 @@ Here's why:
 * Almost all events can listenable
 * Random or specific target can be set
 * Clockwise and counterclockwise rotate direction support
-* XML and Jetpack Compose support
+* Icon load from URL support with Coil
+* Android Views and Jetpack Compose support
 
 Of course, your needs may be different. So I'll be adding more in the near future. You may also
 suggest changes by forking this repo and creating a pull request or opening an issue. Thanks to all
@@ -61,11 +62,11 @@ Use the `Lucky Wheel View Compose` to get started.
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
-<!-- XML -->
+<!-- ANDROID VIEWS -->
 
-## XML
+## Android Views
 
-`Lucky Wheel View Compose` has XML support. Check
+`Lucky Wheel View Compose` has Android Views support. Check
 <a href="https://github.com/caneryilmaz52/LuckyWheelView">Lucky Wheel View</a> to use.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -131,6 +132,12 @@ Populate a list of `WheelData`
 
 `icon` is item icon `ImageBitmap`, if not null then icon will be drawn
 
+`iconURL` is item icon URL, if not null then icon will be drawn
+
+- use only one of `icon` and `iconURL`
+- if both are used, `iconURL` takes priority
+- recommended to use PNG format icon
+
 ```kotlin
 val wheelData = ArrayList<WheelData>()
 val item = WheelData(
@@ -138,7 +145,8 @@ val item = WheelData(
     textColor = listOf(textColor),
     backgroundColor = listOf(backgroundColor),
     textFontId = itemTextFontId,  //optional
-    icon = itemImageBitmap //optional
+    icon = itemImageBitmap, //optional
+    iconURL = itemIconUrl //optional
 )
 wheelData.add(item)
 ```
@@ -229,26 +237,26 @@ fun LuckyWheel(wheelItems: List<WheelData>) {
 Get the perfect look with customization combinations.
 </br></br>
 
-| Parameter Name         | Description                                                                                                                                                                                                                                                                                 |
-|------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `modifier`             | the Modifier to be applied to this `LuckyWheelView`                                                                                                                                                                                                                                         |
-| `wheelItems`           | a MutableList of `WheelData`                                                                                                                                                                                                                                                                |
-| `target`               | index of the item to win <ul><li>`target` must be between 0 and wheelItems last index (exclusive)</li> <li>if target a negative number then target throw `IllegalArgumentException`</li> <li>if target bigger than `wheelItems` last index then throw `IndexOutOfBoundsException`</li></ul> |
-| `randomRotateStyle`    | check info for `Random Rotate Style` section                                                                                                                                                                                                                                                |
-| `iconPositionFraction` | icon vertical position fraction in wheel slice <ul><li>The smaller the value, the closer to the center</li> <li>The larger the value, the closer to the corners</li></ul>                                                                                                                   |
-| `arrowStyle`           | check info for `Arrow Style` section                                                                                                                                                                                                                                                        |
-| `centerPointStyle`     | check info for `Center Point Style` section                                                                                                                                                                                                                                                 |
-| `cornerPointsStyle`    | check info for `Corner Points Style` section                                                                                                                                                                                                                                                |
-| `centerTextStyle`      | check info for `Center Text Style` section                                                                                                                                                                                                                                                  |
-| `centerImageStyle`     | check info for `Center Image Style` section                                                                                                                                                                                                                                                 |
-| `itemSeparatorStyle`   | check info for `Item Separator Style` section                                                                                                                                                                                                                                               |
-| `itemTextStyle`        | check info for `Item Text Style` section                                                                                                                                                                                                                                                    |
-| `rotateStyle`          | check info for `Rotate Style` section                                                                                                                                                                                                                                                       |
-| `rotateViaSwipeStyle`  | check info for `Rotate Via Swipe Style` section                                                                                                                                                                                                                                             |
-| `strokeStyle`          | check info for `Stroke Style` section                                                                                                                                                                                                                                                       |
-| `onRotationComplete`   | invoke when wheel stop. return `wheelItems[target]` value                                                                                                                                                                                                                                   |
-| `onRotationStatus`     | invoke when wheel rotation status change. return current wheel `RotationStatus` value                                                                                                                                                                                                       |
-| `wheelViewState`       | state of wheel rotate, if is value `WheelViewState(startRotate = true)` then `LuckyWheelView` will start rotating                                                                                                                                                                           |
+| Parameter Name          | Description                                                                                                                                                                                                                                                                                 |
+|-------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `modifier`              | the Modifier to be applied to this `LuckyWheelView`                                                                                                                                                                                                                                         |
+| `wheelItems`            | a MutableList of `WheelData`                                                                                                                                                                                                                                                                |
+| `target`                | index of the item to win <ul><li>`target` must be between 0 and wheelItems last index (exclusive)</li> <li>if target a negative number then target throw `IllegalArgumentException`</li> <li>if target bigger than `wheelItems` last index then throw `IndexOutOfBoundsException`</li></ul> |
+| `randomRotateStyle`     | check info for `Random Rotate Style` section                                                                                                                                                                                                                                                |
+| `itemIconStyle`         | check info for `Item Icon Style` section                                                                                                                                                                                                                                                    |
+| `arrowStyle`            | check info for `Arrow Style` section                                                                                                                                                                                                                                                        |
+| `centerPointStyle`      | check info for `Center Point Style` section                                                                                                                                                                                                                                                 |
+| `cornerPointsStyle`     | check info for `Corner Points Style` section                                                                                                                                                                                                                                                |
+| `centerTextStyle`       | check info for `Center Text Style` section                                                                                                                                                                                                                                                  |
+| `centerImageStyle`      | check info for `Center Image Style` section                                                                                                                                                                                                                                                 |
+| `itemSeparatorStyle`    | check info for `Item Separator Style` section                                                                                                                                                                                                                                               |
+| `itemTextStyle`         | check info for `Item Text Style` section                                                                                                                                                                                                                                                    |
+| `rotateStyle`           | check info for `Rotate Style` section                                                                                                                                                                                                                                                       |
+| `rotateViaSwipeStyle`   | check info for `Rotate Via Swipe Style` section                                                                                                                                                                                                                                             |
+| `strokeStyle`           | check info for `Stroke Style` section                                                                                                                                                                                                                                                       |
+| `onRotationComplete`    | invoke when wheel stop. return `wheelItems[target]` value                                                                                                                                                                                                                                   |
+| `onRotationStatus`      | invoke when wheel rotation status change. return current wheel `RotationStatus` value                                                                                                                                                                                                       |
+| `wheelViewState`        | state of wheel rotate, if is value `WheelViewState(startRotate = true)` then `LuckyWheelView` will start rotating                                                                                                                                                                           |
 
 
 ```kotlin
@@ -258,7 +266,7 @@ fun LuckyWheelView(
     wheelItems: List<WheelData>,
     target: Int = 0,
     randomRotateStyle: RandomRotateStyle = RandomRotateStyle(),
-    @FloatRange(from = 0.1, to = 0.9) iconPositionFraction: Float = 0.5F,
+    itemIconStyle: ItemIconStyle = ItemIconStyle(),
     arrowStyle: ArrowStyle = ArrowStyle(),
     centerPointStyle: CenterPointStyle = CenterPointStyle(),
     cornerPointsStyle: CornerPointsStyle = CornerPointsStyle(),
@@ -290,6 +298,25 @@ fun LuckyWheelView(
 data class RandomRotateStyle(
     val rotateToRandomTarget: Boolean = false,
     val randomTargets: IntArray? = null,
+) : Serializable
+```
+</details>
+
+<details>
+  <summary>Item Icon Style</summary>
+  </br>
+
+```kotlin
+/**
+ * @param iconSizeMultiplier is item icon size multiplier value, default icon size `100px`
+ * @param iconPositionFraction
+ * * is icon vertical position fraction in wheel slice
+ * - The smaller the value, the closer to the center
+ * - The larger the value, the closer to the corners
+ */
+data class ItemIconStyle(
+    val iconSizeMultiplier: Float = 1.0F,
+    @FloatRange(from = 0.1, to = 0.9) val iconPositionFraction: Float = 0.5F
 ) : Serializable
 ```
 </details>

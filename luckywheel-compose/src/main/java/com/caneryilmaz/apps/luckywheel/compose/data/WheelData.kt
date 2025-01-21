@@ -20,7 +20,16 @@ import java.io.Serializable
  * @param textFontId
  * * is custom font id of item text
  * - if [textFontId] is not null then [ItemTextStyle.textFontId] will be overridden for this item text
- * @param icon is item icon resource id, if not null then icon will be drawn
+ * @param icon
+ * * is item icon [ImageBitmap], recommended to use PNG format icon
+ * - if not null then icon will be drawn
+ * - use only one of [icon] and [iconURL]
+ * - if both are used, [iconURL] takes priority
+ * @param iconURL
+ * * is item icon URL, recommended to use PNG format icon
+ * - if not null then icon will be drawn
+ * - use only one of [icon] and [iconURL]
+ * - if both are used, [iconURL] takes priority
  * @param iconColor is icon tint color
  */
 data class WheelData(
@@ -29,5 +38,6 @@ data class WheelData(
     val backgroundColor: List<Color>,
     @FontRes val textFontId: Int? = null,
     val icon: ImageBitmap? = null,
+    val iconURL: String? = null,
     val iconColor: Color = Color.Unspecified
 ) : Serializable
