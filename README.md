@@ -9,6 +9,7 @@
 [![License][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
+[![Android Weekly][android-weekly-shield]][android-weekly-url]
 [![JitPack Version][jitpack-version-shield]][jitpack-url]
 [![JitPack Download Week][jitpack-download-week-shield]][jitpack-url]
 [![JitPack Download Month][jitpack-download-month-shield]][jitpack-url]
@@ -665,9 +666,9 @@ Distributed under the [Apache 2.0 License](LICENSE). See `LICENSE.txt` for more 
 
 [jitpack-url]: https://jitpack.io/#caneryilmaz52/LuckyWheelViewCompose
 
-[android-weekly-shield]: https://androidweekly.net/issues/issue-629/badge
+[android-weekly-shield]: https://androidweekly.net/issues/issue-633/badge
 
-[android-weekly-url]: https://androidweekly.net/issues/issue-629
+[android-weekly-url]: https://androidweekly.net/issues/issue-663
 
 [buy-me-a-coffee-shield]: https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png
 
