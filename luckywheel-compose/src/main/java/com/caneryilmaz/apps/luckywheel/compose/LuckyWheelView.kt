@@ -47,6 +47,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.withSave
 import coil3.imageLoader
 import coil3.request.ImageRequest
 import coil3.toBitmap
@@ -493,6 +494,38 @@ fun LuckyWheelView(
                                             verticalOffset + (index * itemTextStyle.textSizeSp.toPx()),
                                             textPaint
                                         )
+                                    }
+                                }
+
+                                TextOrientation.VERTICAL_TO_CENTER -> {
+                                    val middleAngle = startAngle + sweepAngle / 2
+                                    val middleAngleRad = Math.toRadians(middleAngle.toDouble()).toFloat()
+                                    val textRadius = wheelRadius * itemTextStyle.textPositionFraction
+
+                                    val x = center.x + textRadius * cos(middleAngleRad)
+                                    val y = center.y + textRadius * sin(middleAngleRad)
+
+                                    nativeCanvas.withSave {
+                                        val rotationAngle = middleAngle + 180
+
+                                        rotate(rotationAngle, x, y)
+
+                                        drawText(item.text, x, y + (textPaint.textSize / 3), textPaint)
+                                    }
+                                }
+
+                                TextOrientation.VERTICAL_TO_CORNER -> {
+                                    val middleAngle = startAngle + sweepAngle / 2
+                                    val middleAngleRad = Math.toRadians(middleAngle.toDouble()).toFloat()
+                                    val textRadius = wheelRadius * itemTextStyle.textPositionFraction
+
+                                    val x = center.x + textRadius * cos(middleAngleRad)
+                                    val y = center.y + textRadius * sin(middleAngleRad)
+
+                                    nativeCanvas.withSave {
+                                        rotate(middleAngle, x, y)
+
+                                        drawText(item.text, x, y + (textPaint.textSize / 3), textPaint)
                                     }
                                 }
                             }
