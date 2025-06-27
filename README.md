@@ -227,6 +227,8 @@ fun LuckyWheel(wheelItems: List<WheelData>) {
 
 <img src="https://github.com/caneryilmaz52/LuckyWheelViewCompose/blob/main/images/gif4.gif" width="250" height="250"/> <img src="https://github.com/caneryilmaz52/LuckyWheelViewCompose/blob/main/images/gif5.gif" width="250" height="250"/> <img src="https://github.com/caneryilmaz52/LuckyWheelViewCompose/blob/main/images/gif6.gif" width="250" height="250"/>
 
+<img src="https://github.com/caneryilmaz52/LuckyWheelViewCompose/blob/main/images/gif7.gif" width="250" height="250"/> <img src="https://github.com/caneryilmaz52/LuckyWheelViewCompose/blob/main/images/gif8.gif" width="250" height="250"/>
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- CUSTOMIZATION -->
@@ -485,13 +487,18 @@ data class ItemSeparatorStyle(
  * @param textSizeSp is text size of wheel items
  * @param letterSpacingSp is letter spacing of wheel items text
  * @param textFontId is custom font resource id of wheel items text
+ * @param textPositionFraction
+ *  * is text vertical position fraction in wheel slice
+ *  * - The smaller the value, the closer to the center
+ *  * - The larger the value, the closer to the corners
  */
 data class ItemTextStyle(
     val textOrientation: TextOrientation = TextOrientation.HORIZONTAL,
     val textPaddingDp: Dp = 4.dp,
     val textSizeSp: TextUnit = 16.sp,
     val letterSpacingSp: TextUnit = TextUnit.Unspecified,
-    @FontRes val textFontId: Int? = null
+    @FontRes val textFontId: Int? = null,
+    @FloatRange(from = 0.1, to = 0.9) val textPositionFraction: Float = 0.7F
 ) : Serializable
 ```
 
