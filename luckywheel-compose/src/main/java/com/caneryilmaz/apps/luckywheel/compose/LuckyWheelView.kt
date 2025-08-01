@@ -1,8 +1,8 @@
 package com.caneryilmaz.apps.luckywheel.compose
 
-import android.graphics.Bitmap
 import android.graphics.LinearGradient
 import android.graphics.Paint
+import android.graphics.Rect
 import android.graphics.Shader
 import android.graphics.Typeface
 import androidx.compose.animation.core.Animatable
@@ -47,7 +47,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.BlendModeColorFilterCompat
+import androidx.core.graphics.BlendModeCompat
+import androidx.core.graphics.scale
 import androidx.core.graphics.withSave
+import androidx.core.graphics.withTranslation
 import coil3.imageLoader
 import coil3.request.ImageRequest
 import coil3.toBitmap
@@ -73,6 +77,7 @@ import com.caneryilmaz.apps.luckywheel.compose.state.WheelViewState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.cos
+import kotlin.math.max
 import kotlin.math.sin
 import kotlin.random.Random
 
@@ -536,7 +541,7 @@ fun LuckyWheelView(
                                     .target(
                                         onSuccess = { result ->
                                             val adaptiveSize = (100 * itemIconStyle.iconSizeMultiplier).toInt()
-                                            val scaledIcon = Bitmap.createScaledBitmap(result.toBitmap(), adaptiveSize, adaptiveSize, true)
+                                            val scaledIcon = result.toBitmap().scale(adaptiveSize, adaptiveSize)
                                             val imageBitmap = scaledIcon.asImageBitmap()
 
                                             val imageWidth = imageBitmap.width.toFloat()
@@ -569,7 +574,7 @@ fun LuckyWheelView(
                                         onError = { error ->
                                             item.icon?.let { icon ->
                                                 val adaptiveSize = (100 * itemIconStyle.iconSizeMultiplier).toInt()
-                                                val scaledIcon = Bitmap.createScaledBitmap(icon.asAndroidBitmap(), adaptiveSize, adaptiveSize, true)
+                                                val scaledIcon = icon.asAndroidBitmap().scale(adaptiveSize, adaptiveSize)
                                                 val imageBitmap = scaledIcon.asImageBitmap()
 
                                                 val imageWidth = imageBitmap.width.toFloat()
@@ -606,34 +611,44 @@ fun LuckyWheelView(
                             } else {
                                 item.icon?.let { icon ->
                                     val adaptiveSize = (100 * itemIconStyle.iconSizeMultiplier).toInt()
-                                    val scaledIcon = Bitmap.createScaledBitmap(icon.asAndroidBitmap(), adaptiveSize, adaptiveSize, true)
+                                    val scaledIcon = icon.asAndroidBitmap().scale(adaptiveSize, adaptiveSize)
                                     val imageBitmap = scaledIcon.asImageBitmap()
 
-                                    val imageWidth = imageBitmap.width.toFloat()
-                                    val imageHeight = imageBitmap.height.toFloat()
-                                    val angle = sweepAngle * wheelItems.indexOf(item) + sweepAngle / 2
+                                    val imageWidth = max(imageBitmap.width, imageBitmap.height)
+                                    val angle = sweepAngle * wheelItems.indexOf(item).toFloat() + sweepAngle / 2
                                     val radians = Math.toRadians(angle.toDouble())
 
                                     val sliceCenterX = (center.x + (wheelRadius * itemIconStyle.iconPositionFraction) * cos(radians)).toFloat()
                                     val sliceCenterY = (center.y + (wheelRadius * itemIconStyle.iconPositionFraction) * sin(radians)).toFloat()
 
-                                    if (item.iconColor != Color.Unspecified) {
-                                        drawImage(
-                                            image = imageBitmap,
-                                            topLeft = Offset(
-                                                x = sliceCenterX - imageWidth / 2,
-                                                y = sliceCenterY - imageHeight / 2
-                                            ),
-                                            colorFilter = ColorFilter.tint(color = item.iconColor)
+                                    nativeCanvas.withTranslation(sliceCenterX, sliceCenterY) {
+                                        rotate(angle + 90F)
+
+                                        val rect = Rect(
+                                            -imageWidth / 2,
+                                            -imageWidth / 2,
+                                            imageWidth / 2,
+                                            imageWidth / 2
                                         )
-                                    } else {
-                                        drawImage(
-                                            image = imageBitmap,
-                                            topLeft = Offset(
-                                                x = sliceCenterX - imageWidth / 2,
-                                                y = sliceCenterY - imageHeight / 2
+
+                                        if (item.iconColor != Color.Unspecified) {
+                                            val paint = Paint()
+                                            paint.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(item.iconColor.toArgb(), BlendModeCompat.SRC_IN)
+                                            paint.color = item.iconColor.toArgb()
+                                            nativeCanvas.drawBitmap(
+                                                imageBitmap.asAndroidBitmap(),
+                                                null,
+                                                rect,
+                                                paint
                                             )
-                                        )
+                                        } else {
+                                            nativeCanvas.drawBitmap(
+                                                imageBitmap.asAndroidBitmap(),
+                                                null,
+                                                rect,
+                                                null
+                                            )
+                                        }
                                     }
                                 }
                             }
