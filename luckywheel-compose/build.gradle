@@ -67,7 +67,7 @@ afterEvaluate {
                 from components.release
                 groupId = "com.github.caneryilmaz52"
                 artifactId = "LuckyWheelViewCompose"
-                version = "1.0.2"
+                version = "1.0.3"
 
                 pom {
                     name.set("Lucky Wheel View Compose")

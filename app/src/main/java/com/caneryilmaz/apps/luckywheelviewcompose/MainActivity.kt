@@ -68,7 +68,7 @@ class MainActivity : ComponentActivity() {
             LuckyWheelViewComposeTheme {
                 val dummyWheelData = ArrayList<WheelData>()
 
-                val imageBitmap: ImageBitmap = ImageBitmap.imageResource(id = R.drawable.star_32dp)
+                val imageBitmap: ImageBitmap = ImageBitmap.imageResource(id = R.drawable.favorite_24dp)
 
                 (0..7).forEach {
                     val item = WheelData(

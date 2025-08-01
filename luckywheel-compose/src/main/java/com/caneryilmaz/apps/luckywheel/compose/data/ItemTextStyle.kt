@@ -16,9 +16,9 @@ import java.io.Serializable
  * @param letterSpacingSp is letter spacing of wheel items text
  * @param textFontId is custom font resource id of wheel items text
  * @param textPositionFraction
- *  * is text vertical position fraction in wheel slice
- *  * - The smaller the value, the closer to the center
- *  * - The larger the value, the closer to the corners
+ *  is text vertical position fraction in wheel slice
+ *  - The smaller the value, the closer to the center
+ *  - The larger the value, the closer to the corners
  */
 data class ItemTextStyle(
     val textOrientation: TextOrientation = TextOrientation.HORIZONTAL,
